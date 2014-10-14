@@ -94,7 +94,7 @@ if ( tcp ) {
     net = require('net');
     net.createServer(function (socket) {
         var name = "TCP -> " + socket.remoteAddress + ":" + socket.remotePort
-        peeps[name] = {
+        /*peeps[name] = {
             'send' : function(message, sender) { socket.write(sender + " said " + message + "\n") }
         };
         socket.write("Welcome " + name + "\n");
@@ -107,7 +107,21 @@ if ( tcp ) {
                 console.log("I closed due to an error!");
             }
             left(name);
+        });*/
+        socket.on('end', function() {
+            console.log('server disconnected');
         });
+        socket.write('hello ' + name + '\r\n');
+        socket.on('data', function(data){
+            var cleanData = cleanInput(data);
+            if(cleanData === "quit") {
+                socket.end('Goodbye!\n');
+            }
+        })
     }).listen(ruppells_sockets_port);
     console.log("TCP listening on " + ruppells_sockets_port);
+}
+
+function cleanInput(data) {
+    return data.toString().replace(/(\r\n|\n|\r)/gm,"");
 }
