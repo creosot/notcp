@@ -89,30 +89,20 @@ if ( http ) {
 }
 
 // TCP socket stuff
+var im;
 if ( tcp ) {
     var ruppells_sockets_port = process.env.RUPPELLS_SOCKETS_LOCAL_PORT || 1337;
     net = require('net');
     net.createServer(function (socket) {
         var name = "TCP -> " + socket.remoteAddress + ":" + socket.remotePort
-        /*peeps[name] = {
-            'send' : function(message, sender) { socket.write(sender + " said " + message + "\n") }
-        };
-        socket.write("Welcome " + name + "\n");
-        joined(name);
-        socket.on('data', function (data) {
-            broadcast(data.toString().replace(/(\r\n|\n|\r)/gm,""), name);
-        });
-        socket.on('close', function (had_error) {
-            if (had_error) {
-                console.log("I closed due to an error!");
-            }
-            left(name);
-        });*/
+        im = '';
         socket.on('end', function() {
             console.log('server disconnected');
         });
         socket.write('hello ' + name + '\r\n');
         socket.on('data', function(data){
+            var buf = new Buffer(data);
+            console.log(buf.toString());
             var cleanData = cleanInput(data);
             if(cleanData === "quit") {
                 socket.end('Goodbye!\n');
